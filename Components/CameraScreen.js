@@ -162,10 +162,10 @@ const CameraScreen = () => {
     //Store data to sqlite
     async function storeGallary() {
         console.log(curCity);
-        const base64Image = await FileSystem.readAsStringAsync(photo, { encoding: 'base64' });
+        // const base64Image = await FileSystem.readAsStringAsync(photo, { encoding: 'base64' });
 
         db.transaction(tx => {
-            tx.executeSql('INSERT INTO images (image, location, date) values (?,?,?)', [base64Image, curCity, formattedDate],
+            tx.executeSql('INSERT INTO images (image, location, date) values (?,?,?)', [photo.base64, curCity, formattedDate],
                 (txObj, results) => {
                     let existingLocations = [...location];
                     existingLocations.push({ id: results.insertId, image: photo, location: curCity });
