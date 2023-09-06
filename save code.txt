@@ -232,7 +232,20 @@ const CameraScreen = () => {
     //     }
     // };
 
-   
+    //Delete
+    function deleteGallary(id) {
+        db.transaction(tx => {
+            tx.executeSql('DELETE FROM images WHERE id = ?', [id],
+                (txObj, results) => {
+                    if (results.rowsAffected > 0) {
+                        let existingLocations = [...location].filter(res => res.id !== id);
+                        setLocation(existingLocations);
+                    }
+                },
+                (txObj, error) => console.log(error)
+            );
+        });
+    }
 
 
     /*Store image
