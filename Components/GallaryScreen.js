@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, Image, ScrollView, ImageBackground } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Image, ScrollView, ImageBackground, BackHandler } from 'react-native';
 import React, { useState, useEffect, useRef } from 'react';
 import * as SQLite from 'expo-sqlite';
 import cardImg from "../assets/bg.png";
@@ -7,15 +7,17 @@ import viewImg from "../assets/open.png";
 
 import gallaryImgNav from "../assets/gallaryOff.png";
 import camImgNav from "../assets/cameraOff2.png";
-import exitImgNav from "../assets/power.png";
+import exitImgNav from "../assets/door.png";
 import closeBtnImg from "../assets/close.png";
 import deleteBtnImg from "../assets/delete.png";
 
-const GallaryScreen = () => {
+const GallaryScreen = ({ navigation }) => {
     const db = SQLite.openDatabase('db.gallaryDb');
     const [gallary, setGallary] = useState([]);
     const [viewer, setViewer] = useState(false);
     const [gallaryToView, setGallaryToView] = useState(null);
+    const [latestImg, setLatestImg] = useState(null);
+
 
     const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     const monthsOfYear = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -47,6 +49,8 @@ const GallaryScreen = () => {
                 (txObj, results) => {
                     setGallary(results.rows._array)
                     console.log(results.rows._array);
+                    setLatestImg(results.rows._array[results.rows._array.length - 1])
+
                 },
                 (txObj, error) => console.log(error)
             );
@@ -77,6 +81,13 @@ const GallaryScreen = () => {
         setViewer(false);
     }
 
+    const handleExitApp = () => {
+        BackHandler.exitApp();
+    };
+    function toCamera() {
+        navigation.navigate("Camera");
+    }
+
     if (gallary === []) {
         return (
             <View style={styles.container}>
@@ -104,7 +115,27 @@ const GallaryScreen = () => {
                             />
                         </View>
                         {/* {console.log("gallary", gallary)} */}
-                        <View style={{ borderBottomColor: '#7a7a7a', borderBottomWidth: 2, marginTop: 30, }} />
+                        <View style={{ borderBottomColor: '#000', borderBottomWidth: 2, marginTop: 10, }} />
+
+                        {/* {latestImg !== null ? */}
+                        <View style={styles.latestCont}>
+                            <View style={styles.latestTopCont}>
+                                <Image source={logo} style={styles.latestTopImg} />
+                                <View style={styles.latestTopTxtCont}>
+                                    <Text style={styles.latestTopLocation}>New</Text>
+                                    <Text style={styles.latestTopDate}>Newly added photo.</Text>
+                                </View>
+                            </View>
+                            <Image source={logo} style={styles.latestMainImg} />
+
+                            <View style={styles.newCont}>
+                                <Text style={styles.newTitle}>Location</Text>
+                                <Text style={styles.newText}>Date</Text>
+                            </View>
+                        </View>
+                        {/* : null
+                        } */}
+
 
                         <View style={styles.cardCont}>
                             {gallary.map((gal, index) => (
@@ -150,7 +181,7 @@ const GallaryScreen = () => {
                             source={{
                                 uri: `${gallaryToView.image}`
                             }}
-                            // source={{ uri: `file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540dev_loy%252Fthe-image-gallary-app/Camera/de181c75-5beb-409d-a70a-e0952c6e1b3a.jpg` }}
+                        // source={{ uri: `file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540dev_loy%252Fthe-image-gallary-app/Camera/de181c75-5beb-409d-a70a-e0952c6e1b3a.jpg` }}
                         />
                         <View style={styles.detailsCont}>
                             <Text style={styles.locationd}>{gallaryToView.location}</Text>
@@ -182,34 +213,37 @@ const GallaryScreen = () => {
                                 style={styles.btnImg}
                                 source={gallaryImgNav}
                             />
+                            <Text style={styles.btnText}>Gallary</Text>
                         </View>
-                        {/* <Text>Gallary</Text> */}
+
                         {/* </View> */}
                     </View>
                     <View style={styles.btn2Cont}>
 
-                        <View style={styles.btn2}>
+                        <TouchableOpacity style={styles.btn2} onPress={() => toCamera()}>
                             <Image
                                 style={styles.btnCamImg}
                                 source={camImgNav}
                             />
-                        </View>
+                            {/* <Text style={styles.btnText}>Camera</Text> */}
+                        </TouchableOpacity>
 
                     </View>
                     <View style={styles.btn3Cont}>
-                        <View style={styles.btn3}>
+                        <TouchableOpacity style={styles.btn3} onPress={() => handleExitApp()}>
                             <Image
-                                style={styles.btnImg}
+                                style={styles.btnImgE}
                                 source={exitImgNav}
                             />
-                        </View>
+                            <Text style={styles.btnText}>Close</Text>
+                        </TouchableOpacity>
 
                     </View>
                 </ImageBackground>
                 :
                 null
             }
-        </View>
+        </View >
     )
 }
 
@@ -225,7 +259,7 @@ const styles = StyleSheet.create({
         position: "relative"
     },
     header: {
-        marginTop: 60,
+        marginTop: 30,
         marginBottom: 20,
         marginLeft: 10
     },
@@ -237,15 +271,62 @@ const styles = StyleSheet.create({
         position: "absolute",
         top: 40,
         right: 5,
-        backgroundColor: "#e5e2dd",
+        backgroundColor: "#9b9b9b",
         borderRadius: 100
     },
     logo: {
-        width: 100,
-        height: 100,
-        objectFit: "fill",
+        width: 60,
+        height: 60,
+        objectFit: "cover",
         borderRadius: 100,
         margin: 5
+    },
+
+    latestCont: {
+        marginTop: 50
+    },
+    latestTopCont: {
+        flexDirection: "row"
+    },
+    latestTopImg: {
+        width: 50,
+        height: 50,
+        objectFit: "cover",
+        borderWidth: 3,
+        borderColor: "#9b9b9b",
+        borderRadius: 100
+    },
+    latestTopTxtCont: {},
+    latestTopLocation: {
+        color: "#7a7a7a",
+        fontSize: 15,
+        marginTop: 5,
+        marginLeft: 10
+    },
+    latestTopDate: {
+        color: "#9e9e9e",
+        marginLeft: 12,
+        fontSize: 12
+    },
+    latestMainImg: {
+        width: "100%",
+        height: 300,
+        objectFit: "cover",
+        marginTop: 20
+    },
+    newCont: {
+        marginTop: 10
+    },
+    newTitle: {
+        color: "#7a7a7a",
+        fontSize: 18,
+        marginTop: 5,
+        // marginLeft: 10
+    },
+    newText: {
+        color: "#9e9e9e",
+        // marginLeft: 12,
+        fontSize: 14
     },
 
     cardCont: {
@@ -349,7 +430,8 @@ const styles = StyleSheet.create({
         // backgroundColor: "green",
         width: "30%",
         height: "100%",
-        alignItems: "center"
+        alignItems: "center",
+        justifyContent: "center"
     },
     btn2Cont: {
         // backgroundColor: "purple",
@@ -376,57 +458,84 @@ const styles = StyleSheet.create({
         // backgroundColor: "green",
         width: "30%",
         height: "100%",
-        alignItems: "center"
+        alignItems: "center",
+        justifyContent: "center"
     },
 
     btn1: {
         // backgroundColor: "blue",
         height: 70,
         width: 70,
-        marginVertical: 15,
+        // marginVertical: 20,
         // marginHorizontal: 10,
-        borderRadius: 100
+        borderRadius: 100,
+        justifyContent: "center",
+        alignContent: 'center',
     },
     btnImg: {
-        height: 50,
-        width: 50,
+        height: 30,
+        width: 30,
+        marginHorizontal: 20,
+    },
+    btnImgE:{
+        height: 34,
+        width: 34,
+        marginHorizontal: 18,
     },
     btnCamImg: {
         height: 60,
         width: 60,
+        marginHorizontal: 5,
     },
     btn2: {
-        backgroundColor: "#fffffe",
-        // height: 90,
-        // width: 90,
-        // marginVertical: 5,
-        // // marginHorizontal: 5,
-        // borderRadius: 80,
-        borderWidth: 3,
-        borderColor: "#9b9b9b",
-        borderTopLeftRadius: 90,
-        borderTopRightRadius: 90,
-        borderBottomLeftRadius: 90,
-        borderBottomRightRadius: 90,
-        height: "110%",
-        width: "90%",
-        marginVertical: 15,
+        // backgroundColor: "blue",
+        // // height: 90,
+        // // width: 90,
+        // // marginVertical: 5,
+        // // // marginHorizontal: 5,
+        // // borderRadius: 80,
+        // borderWidth: 3,
+        // borderColor: "#9b9b9b",
+        // borderTopLeftRadius: 90,
+        // borderTopRightRadius: 90,
+        // borderBottomLeftRadius: 90,
+        // borderBottomRightRadius: 90,
+        // height: "110%",
+        // width: "90%",
+        // marginVertical: 15,
+        // // marginHorizontal: 10,
+        // borderRadius: 100,
+        // alignItems: "center",
+        // justifyContent: "center",
+        // position: "absolute",
+        // top: -35
+        // backgroundColor: "blue",
+        height: 70,
+        width: 70,
+        // marginVertical: 20,
         // marginHorizontal: 10,
-        borderRadius: 100,
-        alignItems: "center",
+        // borderRadius: 100,
         justifyContent: "center",
-        position: "absolute",
-        top: -35
+        alignContent: 'center',
     },
     btn3: {
         // backgroundColor: "blue",
-        height: 60,
-        width: 60,
-        marginVertical: 15,
+        height: 70,
+        width: 70,
+        // marginVertical: 20,
         // marginHorizontal: 10,
-        borderRadius: 100
+        // borderRadius: 100,
+        justifyContent: "center",
+        alignContent: 'center',
     },
 
+    btnText: {
+        width: "100%",
+        textAlign: "center",
+        fontWeight: "bold",
+        color:"#9b9b9b",
+        marginTop:3
+    },
 
     viewScreen: {
         // backgroundColor: "red",
