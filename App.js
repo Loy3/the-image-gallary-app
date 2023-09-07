@@ -12,14 +12,17 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
+      <Stack.Screen name="Camera" component={CameraScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Gallary" component={GallaryScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="Camera" component={CameraScreen} options={{ headerShown: false }} />
+        
       </Stack.Navigator>
     </NavigationContainer>
     // <View style={styles.container}>
     //   {/* <Text>Open up App.js to start working on your app!</Text> */}
-    //   <CameraScreen />
-    //   {/* <GallaryScreen /> */}
+    //   {/* <CameraScreen /> */}
+
+    //   <GallaryScreen />
+      
     //   <StatusBar style="auto" />
     // </View>
   );

@@ -17,7 +17,7 @@ import gallaryImgNav from "../assets/gallaryOff.png";
 import camImgNav from "../assets/cameraOff2.png";
 import exitImgNav from "../assets/power.png";
 
-const CameraScreen = () => {
+const CameraScreen = ({ navigation }) => {
     const db = SQLite.openDatabase('db.gallaryDb');
 
     const camera = useRef();
@@ -211,6 +211,7 @@ const CameraScreen = () => {
                     let existingLocations = [...location];
                     existingLocations.push({ id: results.insertId, image: photo, location: curCity });
                     setLocation(existingLocations)
+                    toGallary();
                 },
                 (txObj, error) => console.log("Error", error)
             );
@@ -276,6 +277,10 @@ const CameraScreen = () => {
 
     //     )
     // }
+
+    function toGallary() {
+        navigation.navigate("Gallary");
+    }
 
     if (photo) {
         return (
@@ -400,13 +405,13 @@ const CameraScreen = () => {
                                 // position: 'absolute',
                                 bottom: 0,
                                 flexDirection: 'row',
-                                flex: 1,
-                                width: 400,
-                                // padding: 20,
+                                // flex: 1,
+                                width: "100%",
+                                height: "5%"
                                 // justifyContent: 'space-between'
                             }}>
                             <View style={styles.toGallaryCont} >
-                                <TouchableOpacity style={styles.toGallaryBtn} >
+                                <TouchableOpacity style={styles.toGallaryBtn} onPress={() => toGallary()}>
                                     <Image source={logo} style={styles.toGallary} />
                                 </TouchableOpacity>
 
@@ -443,7 +448,9 @@ const CameraScreen = () => {
                                 flex: 1,
                                 backgroundColor: '#fffffe',
                                 justifyContent: 'center',
-                                alignItems: 'center'
+                                alignItems: 'center',
+                                // width: "100%",
+                                // height: "100%"
                             }}
                         >
                             <TouchableOpacity
@@ -455,7 +462,8 @@ const CameraScreen = () => {
                                     flexDirection: 'row',
                                     justifyContent: 'center',
                                     alignItems: 'center',
-                                    height: 40
+                                    height: 40,
+                                    marginTop: 150
                                 }}
                             >
                                 <Text
@@ -532,19 +540,19 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        backgroundColor: 'yellow',
+        // backgroundColor: 'yellow',
         alignItems: 'center',
         justifyContent: 'center',
     },
     return: {
-        marginTop: 20,
+        marginTop: 30,
         width: "100%",
         height: 90,
         backgroundColor: "yellow"
     },
     returnBtnCont: {
         marginTop: 30,
-        marginLeft: 5
+        marginLeft: 10
     },
     returnBtn: {
         width: 35,
@@ -562,7 +570,8 @@ const styles = StyleSheet.create({
         height: 70,
         backgroundColor: "#3b3b3b",
         borderRadius: 100,
-        marginHorizontal: 27.5
+        marginHorizontal: 27.5,
+        marginTop: 100
     },
     toGallary: {
         width: 60,
@@ -584,20 +593,21 @@ const styles = StyleSheet.create({
         padding: 5,
         backgroundColor: "#3b3b3b",
         borderRadius: 100,
-        marginHorizontal: 30
+        marginHorizontal: 30,
+        marginTop: 100
     },
     captureBtn: {
         width: 80,
         height: 80,
         bottom: 0,
         borderRadius: 50,
-        backgroundColor: '#fff'
+        backgroundColor: '#fff',
     },
     camera: {
         marginTop: 0,
         // position:"absolute",
-        width: 400,
-        height: "70%",
+        width: "100%",
+        height: "76%",
         objectFit: "cover"
     },
 
@@ -618,7 +628,8 @@ const styles = StyleSheet.create({
         height: 70,
         backgroundColor: "#3b3b3b",
         borderRadius: 100,
-        marginHorizontal: 27.5
+        marginHorizontal: 27.5,
+        marginTop: 100
     },
     flipBtn: {
         width: 60,
@@ -666,7 +677,7 @@ const styles = StyleSheet.create({
     img: {
         // marginTop: 30,
         width: "100%",
-        height: "78%",
+        height: "75%",
         objectFit: "cover"
     },
     backBtn: {
@@ -676,7 +687,7 @@ const styles = StyleSheet.create({
     },
     btnContainer: {
         position: "absolute",
-        bottom:40,
+        bottom: 70,
         justifyContent: "flex-end",
         alignItems: "center",
         width: "100%",

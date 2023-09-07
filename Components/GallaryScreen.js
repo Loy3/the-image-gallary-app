@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, Image, ScrollView, ImageBackground, BackHandler } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Image, ScrollView, ImageBackground, BackHandler, FlatList } from 'react-native';
 import React, { useState, useEffect, useRef } from 'react';
 import * as SQLite from 'expo-sqlite';
 import cardImg from "../assets/bg.png";
@@ -71,8 +71,8 @@ const GallaryScreen = ({ navigation }) => {
             tx.executeSql('DELETE FROM images WHERE id = ?', [id],
                 (txObj, results) => {
                     if (results.rowsAffected > 0) {
-                        let existingLocations = [...gallary].filter(res => res.id !== id);
-                        setGallary(existingLocations);
+                        let existingGallaries = [...gallary].filter(res => res.id !== id);
+                        setGallary(existingGallaries);
                     }
                 },
                 (txObj, error) => console.log(error)
@@ -87,6 +87,35 @@ const GallaryScreen = ({ navigation }) => {
     function toCamera() {
         navigation.navigate("Camera");
     }
+
+    const renderGallary = ({ item }) => {
+        return (
+            <View style={styles.column}>
+                <ImageBackground source={cardImg} style={styles.card}>
+                    <View style={styles.bgColor}></View>
+                    <Image
+                        style={styles.img}
+                        source={{
+                            uri: `${item.image}`
+                        }}
+                    />
+
+                    <View style={styles.textCont}>
+                        <Text style={styles.location}>{item.location}</Text>
+                        <Text style={styles.date}>{item.date}</Text>
+                    </View>
+                    <View style={styles.viewBtn}>
+                        <TouchableOpacity style={styles.vBtn} onPress={() => openViewer(item)}>
+                            <Image
+                                style={styles.viewBtnImg}
+                                source={viewImg}
+                            />
+                        </TouchableOpacity>
+                    </View>
+                </ImageBackground>
+            </View>
+        );
+    };
 
     if (gallary === []) {
         return (
@@ -117,25 +146,25 @@ const GallaryScreen = ({ navigation }) => {
                         {/* {console.log("gallary", gallary)} */}
                         <View style={{ borderBottomColor: '#000', borderBottomWidth: 2, marginTop: 10, }} />
 
-                        {/* {latestImg !== null ? */}
-                        <View style={styles.latestCont}>
-                            <View style={styles.latestTopCont}>
-                                <Image source={logo} style={styles.latestTopImg} />
-                                <View style={styles.latestTopTxtCont}>
-                                    <Text style={styles.latestTopLocation}>New</Text>
-                                    <Text style={styles.latestTopDate}>Newly added photo.</Text>
+                        {latestImg !== null ?
+                            <View style={styles.latestCont}>
+                                <View style={styles.latestTopCont}>
+                                    <Image source={{ uri: `${latestImg.image}` }} style={styles.latestTopImg} />
+                                    <View style={styles.latestTopTxtCont}>
+                                        <Text style={styles.latestTopLocation}>New</Text>
+                                        <Text style={styles.latestTopDate}>Newly added photo.</Text>
+                                    </View>
+                                </View>
+                                <Image source={{ uri: `${latestImg.image}` }} style={styles.latestMainImg} />
+
+                                <View style={styles.newCont}>
+                                    <Text style={styles.newTitle}>{latestImg.location}</Text>
+                                    <Text style={styles.newText}>{latestImg.date}</Text>
                                 </View>
                             </View>
-                            <Image source={logo} style={styles.latestMainImg} />
-
-                            <View style={styles.newCont}>
-                                <Text style={styles.newTitle}>Location</Text>
-                                <Text style={styles.newText}>Date</Text>
-                            </View>
-                        </View>
-                        {/* : null
-                        } */}
-
+                            : null
+                        }
+                        <View style={{ borderBottomColor: '#000', borderBottomWidth: 2, marginTop: 50, }} />
 
                         <View style={styles.cardCont}>
                             {gallary.map((gal, index) => (
@@ -165,6 +194,13 @@ const GallaryScreen = ({ navigation }) => {
                                 </View>
                             ))}
 
+                            {/* <FlatList
+                                data={gallary}
+                                renderItem={renderGallary}
+                                keyExtractor={(item) => item.id.toString()}
+                                numColumns={2}
+                            /> */}
+
                         </View>
 
                     </View>
@@ -191,7 +227,7 @@ const GallaryScreen = ({ navigation }) => {
                         </View>
 
                         <View style={styles.removeBtnCont}>
-                            <TouchableOpacity style={styles.removeBtn} onPress={() => deleteGallary(3)}>
+                            <TouchableOpacity style={styles.removeBtn} onPress={() => deleteGallary(gallaryToView.id)}>
                                 <Image
                                     style={styles.removeBtnImg}
                                     source={deleteBtnImg}
@@ -259,7 +295,7 @@ const styles = StyleSheet.create({
         position: "relative"
     },
     header: {
-        marginTop: 30,
+        marginTop: 80,
         marginBottom: 20,
         marginLeft: 10
     },
@@ -269,21 +305,21 @@ const styles = StyleSheet.create({
     },
     logoCont: {
         position: "absolute",
-        top: 40,
+        top: 55,
         right: 5,
         backgroundColor: "#9b9b9b",
         borderRadius: 100
     },
     logo: {
-        width: 60,
-        height: 60,
+        width: 80,
+        height: 80,
         objectFit: "cover",
         borderRadius: 100,
         margin: 5
     },
 
     latestCont: {
-        marginTop: 50
+        marginTop: 40
     },
     latestTopCont: {
         flexDirection: "row"
@@ -477,7 +513,7 @@ const styles = StyleSheet.create({
         width: 30,
         marginHorizontal: 20,
     },
-    btnImgE:{
+    btnImgE: {
         height: 34,
         width: 34,
         marginHorizontal: 18,
@@ -533,8 +569,8 @@ const styles = StyleSheet.create({
         width: "100%",
         textAlign: "center",
         fontWeight: "bold",
-        color:"#9b9b9b",
-        marginTop:3
+        color: "#9b9b9b",
+        marginTop: 3
     },
 
     viewScreen: {
