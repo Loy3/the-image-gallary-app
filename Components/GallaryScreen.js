@@ -29,14 +29,6 @@ const GallaryScreen = ({ navigation }) => {
     const formattedDate = `${dayOfWeek}, ${dayOfMonth} ${monthOfYear}`;
 
     useEffect(() => {
-        // db.transaction(tx => {
-        //     tx.executeSql('DROP TABLE IF EXISTS images;', [], (tx, resultSet) => {
-        //         console.log('Table deleted successfully');
-        //     },
-        //         error => {
-        //             console.log('Error deleting table:', error);
-        //         });
-        // });
         db.transaction((tx) => {
             tx.executeSql(
                 "CREATE TABLE IF NOT EXISTS images (id INTEGER PRIMARY KEY AUTOINCREMENT, image TEXT, location TEXT, date TEXT)"
@@ -48,9 +40,8 @@ const GallaryScreen = ({ navigation }) => {
                 "SELECT * FROM images", null,
                 (txObj, results) => {
                     setGallary(results.rows._array)
-                    console.log(results.rows._array);
+                    // console.log(results.rows._array);
                     setLatestImg(results.rows._array[results.rows._array.length - 1])
-
                 },
                 (txObj, error) => console.log(error)
             );
@@ -73,6 +64,7 @@ const GallaryScreen = ({ navigation }) => {
                     if (results.rowsAffected > 0) {
                         let existingGallaries = [...gallary].filter(res => res.id !== id);
                         setGallary(existingGallaries);
+                        setLatestImg(existingGallaries[existingGallaries.length - 1]);
                     }
                 },
                 (txObj, error) => console.log(error)
@@ -88,34 +80,34 @@ const GallaryScreen = ({ navigation }) => {
         navigation.navigate("Camera");
     }
 
-    const renderGallary = ({ item }) => {
-        return (
-            <View style={styles.column}>
-                <ImageBackground source={cardImg} style={styles.card}>
-                    <View style={styles.bgColor}></View>
-                    <Image
-                        style={styles.img}
-                        source={{
-                            uri: `${item.image}`
-                        }}
-                    />
+    // const renderGallary = ({ item }) => {
+    //     return (
+    //         <View style={styles.column}>
+    //             <ImageBackground source={cardImg} style={styles.card}>
+    //                 <View style={styles.bgColor}></View>
+    //                 <Image
+    //                     style={styles.img}
+    //                     source={{
+    //                         uri: `${item.image}`
+    //                     }}
+    //                 />
 
-                    <View style={styles.textCont}>
-                        <Text style={styles.location}>{item.location}</Text>
-                        <Text style={styles.date}>{item.date}</Text>
-                    </View>
-                    <View style={styles.viewBtn}>
-                        <TouchableOpacity style={styles.vBtn} onPress={() => openViewer(item)}>
-                            <Image
-                                style={styles.viewBtnImg}
-                                source={viewImg}
-                            />
-                        </TouchableOpacity>
-                    </View>
-                </ImageBackground>
-            </View>
-        );
-    };
+    //                 <View style={styles.textCont}>
+    //                     <Text style={styles.location}>{item.location}</Text>
+    //                     <Text style={styles.date}>{item.date}</Text>
+    //                 </View>
+    //                 <View style={styles.viewBtn}>
+    //                     <TouchableOpacity style={styles.vBtn} onPress={() => openViewer(item)}>
+    //                         <Image
+    //                             style={styles.viewBtnImg}
+    //                             source={viewImg}
+    //                         />
+    //                     </TouchableOpacity>
+    //                 </View>
+    //             </ImageBackground>
+    //         </View>
+    //     );
+    // };
 
     if (gallary === []) {
         return (
@@ -143,8 +135,8 @@ const GallaryScreen = ({ navigation }) => {
                                 source={logo}
                             />
                         </View>
-                        {/* {console.log("gallary", gallary)} */}
-                        <View style={{ borderBottomColor: '#000', borderBottomWidth: 2, marginTop: 10, }} />
+
+                        <View style={{ borderBottomColor: '#000', borderBottomWidth: 2, marginTop: 30, }} />
 
                         {latestImg !== null ?
                             <View style={styles.latestCont}>
@@ -164,12 +156,12 @@ const GallaryScreen = ({ navigation }) => {
                             </View>
                             : null
                         }
-                        <View style={{ borderBottomColor: '#000', borderBottomWidth: 2, marginTop: 50, }} />
+                        <View style={{ borderBottomColor: '#000', borderBottomWidth: 2, marginTop: 40, }} />
 
                         <View style={styles.cardCont}>
                             {gallary.map((gal, index) => (
                                 <View key={index} style={styles.column}>
-                                    <ImageBackground source={cardImg} style={styles.card}>
+                                    <ImageBackground source={cardImg} style={[styles.card, { borderRadius: 100 }]}>
                                         <View style={styles.bgColor}></View>
                                         <Image
                                             style={styles.img}
@@ -217,13 +209,10 @@ const GallaryScreen = ({ navigation }) => {
                             source={{
                                 uri: `${gallaryToView.image}`
                             }}
-                        // source={{ uri: `file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540dev_loy%252Fthe-image-gallary-app/Camera/de181c75-5beb-409d-a70a-e0952c6e1b3a.jpg` }}
                         />
                         <View style={styles.detailsCont}>
                             <Text style={styles.locationd}>{gallaryToView.location}</Text>
-                            {/* <Text style={styles.locationd}>Location</Text> */}
                             <Text style={styles.dated}>{gallaryToView.date}</Text>
-                            {/* <Text style={styles.dated}>date</Text> */}
                         </View>
 
                         <View style={styles.removeBtnCont}>
@@ -243,7 +232,6 @@ const GallaryScreen = ({ navigation }) => {
 
                 <ImageBackground style={styles.btmNav} source={cardImg}>
                     <View style={styles.btn1Cont}>
-                        {/* <View style={styles.wrap}> */}
                         <View style={styles.btn1}>
                             <Image
                                 style={styles.btnImg}
@@ -251,8 +239,6 @@ const GallaryScreen = ({ navigation }) => {
                             />
                             <Text style={styles.btnText}>Gallary</Text>
                         </View>
-
-                        {/* </View> */}
                     </View>
                     <View style={styles.btn2Cont}>
 
@@ -261,7 +247,7 @@ const GallaryScreen = ({ navigation }) => {
                                 style={styles.btnCamImg}
                                 source={camImgNav}
                             />
-                            {/* <Text style={styles.btnText}>Camera</Text> */}
+                            <Text style={styles.btnText}>Camera</Text>
                         </TouchableOpacity>
 
                     </View>
@@ -295,7 +281,7 @@ const styles = StyleSheet.create({
         position: "relative"
     },
     header: {
-        marginTop: 80,
+        marginTop: 40,
         marginBottom: 20,
         marginLeft: 10
     },
@@ -305,9 +291,9 @@ const styles = StyleSheet.create({
     },
     logoCont: {
         position: "absolute",
-        top: 55,
+        top: 30,
         right: 5,
-        backgroundColor: "#9b9b9b",
+        backgroundColor: "#000",
         borderRadius: 100
     },
     logo: {
@@ -315,7 +301,7 @@ const styles = StyleSheet.create({
         height: 80,
         objectFit: "cover",
         borderRadius: 100,
-        margin: 5
+        margin: 4
     },
 
     latestCont: {
@@ -325,30 +311,31 @@ const styles = StyleSheet.create({
         flexDirection: "row"
     },
     latestTopImg: {
-        width: 50,
-        height: 50,
+        width: 70,
+        height: 70,
         objectFit: "cover",
         borderWidth: 3,
-        borderColor: "#9b9b9b",
+        borderColor: "#000",
         borderRadius: 100
     },
     latestTopTxtCont: {},
     latestTopLocation: {
         color: "#7a7a7a",
         fontSize: 15,
-        marginTop: 5,
-        marginLeft: 10
+        marginTop: 10,
+        marginLeft: 15
     },
     latestTopDate: {
         color: "#9e9e9e",
-        marginLeft: 12,
-        fontSize: 12
+        marginLeft: 13,
+        fontSize: 14
     },
     latestMainImg: {
         width: "100%",
-        height: 300,
+        height: 250,
         objectFit: "cover",
-        marginTop: 20
+        marginTop: 30,
+        borderRadius: 20
     },
     newCont: {
         marginTop: 10
@@ -388,43 +375,48 @@ const styles = StyleSheet.create({
     card: {
         width: "100%",
         marginVertical: 10,
-        height: 400,
+        height: 200,
         borderRadius: 10
     },
     img: {
         position: "absolute",
-        height: "75%",
-        width: "90%",
+        height: 170,
+        width: "92%",
         objectFit: "cover",
         // borderRadius: 30,
-        marginHorizontal: "5%",
-        marginTop: "5%",
+        marginHorizontal: "4%",
+        marginVertical: 15,
         zIndex: 10
     },
     bgColor: {
         position: "absolute",
-        height: "100%",
-        width: "100%",
-        zIndex: 1,
-        backgroundColor: "#fbfbf7",
-        opacity: 0.4,
+        height: 170,
+        width: "92%",
+        zIndex: 20,
+        backgroundColor: "gray",
+        opacity: 0.6,
+        marginHorizontal: "4%",
+        marginVertical: 15,
         // borderRadius: 30
     },
     textCont: {
         position: "absolute",
         zIndex: 10,
         bottom: 20,
-        left: 10
+        left: 10,
+        zIndex: 30
     },
     location: {
-        color: "#7a7a7a",
+        color: "white",
         fontSize: 18,
         marginTop: 10,
         marginLeft: 10
     },
     date: {
-        color: "#9e9e9e",
-        marginLeft: 12
+        color: "whitesmoke",
+        marginLeft: 10,
+        fontStyle: "italic",
+        fontSize: 12
     },
     viewBtn: {
         width: 75,
@@ -432,9 +424,9 @@ const styles = StyleSheet.create({
         borderRadius: 100,
         position: "absolute",
         backgroundColor: "#c5c5c5",
-        zIndex: 10,
+        zIndex: 30,
         bottom: 30,
-        right: 20,
+        right: 30,
 
         // ffa96b color for border
     },
@@ -457,7 +449,7 @@ const styles = StyleSheet.create({
     btmNav: {
         height: 80,
         width: "100%",
-        backgroundColor: "yellow",
+        // backgroundColor: "yellow",
         position: "absolute",
         bottom: 0,
         flexDirection: "row"
@@ -519,38 +511,14 @@ const styles = StyleSheet.create({
         marginHorizontal: 18,
     },
     btnCamImg: {
-        height: 60,
-        width: 60,
-        marginHorizontal: 5,
+        height: 40,
+        width: 40,
+        marginHorizontal: 15,
     },
     btn2: {
-        // backgroundColor: "blue",
-        // // height: 90,
-        // // width: 90,
-        // // marginVertical: 5,
-        // // // marginHorizontal: 5,
-        // // borderRadius: 80,
-        // borderWidth: 3,
-        // borderColor: "#9b9b9b",
-        // borderTopLeftRadius: 90,
-        // borderTopRightRadius: 90,
-        // borderBottomLeftRadius: 90,
-        // borderBottomRightRadius: 90,
-        // height: "110%",
-        // width: "90%",
-        // marginVertical: 15,
-        // // marginHorizontal: 10,
-        // borderRadius: 100,
-        // alignItems: "center",
-        // justifyContent: "center",
-        // position: "absolute",
-        // top: -35
-        // backgroundColor: "blue",
+
         height: 70,
         width: 70,
-        // marginVertical: 20,
-        // marginHorizontal: 10,
-        // borderRadius: 100,
         justifyContent: "center",
         alignContent: 'center',
     },
@@ -558,9 +526,7 @@ const styles = StyleSheet.create({
         // backgroundColor: "blue",
         height: 70,
         width: 70,
-        // marginVertical: 20,
-        // marginHorizontal: 10,
-        // borderRadius: 100,
+
         justifyContent: "center",
         alignContent: 'center',
     },
@@ -574,12 +540,10 @@ const styles = StyleSheet.create({
     },
 
     viewScreen: {
-        // backgroundColor: "red",
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
-        // marginVertical: 10,
-        // width: 380,
+
         maxWidth: 480,
         minWidth: "100%",
         minHeight: "100%"
@@ -646,10 +610,3 @@ const styles = StyleSheet.create({
     },
 
 })
-
-
-/*
-
-               
-                
-                */
