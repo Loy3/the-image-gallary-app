@@ -109,13 +109,13 @@ const GallaryScreen = ({ navigation }) => {
     //     );
     // };
 
-    if (gallary === []) {
-        return (
-            <View style={styles.container}>
-                <Text>Loading...</Text>
-            </View>
-        )
-    }
+    // if (gallary === []) {
+    //     return (
+    //         <View style={styles.container}>
+    //             <Text>Loading...</Text>
+    //         </View>
+    //     )
+    // }
 
     return (
         <View style={styles.container}>
